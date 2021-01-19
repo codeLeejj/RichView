@@ -1,0 +1,40 @@
+<?xml version="1.0" encoding="utf-8"?>
+<resources>
+    <!--    系统的一些尺寸   -->
+    <dimen name="statusBarHeight">35dp</dimen>
+    <dimen name="toolbarHeight">50dp</dimen>
+
+    <!--    字体大小  -->
+    <dimen name="textSizeBig">16sp</dimen>
+    <dimen name="textSize">14sp</dimen>
+    <dimen name="textSizeSmall">13sp</dimen>
+
+    <!--    自定义的toolbar    -->
+    <dimen name="backIconWidth">18dp</dimen>
+    <dimen name="backIconHeight">18dp</dimen>
+    <dimen name="titleSize">18sp</dimen>
+
+    <!--    统一的距离    -->
+    <dimen name="marginWindowL">3dp</dimen>
+    <dimen name="marginWindowS">6dp</dimen>
+    <dimen name="marginWindow">10dp</dimen>
+    <dimen name="marginWindow2">15dp</dimen>
+    <dimen name="marginWindow_x2">20dp</dimen>
+
+    <!-- 等待层尺寸 -->
+    <dimen name="dialogButtonHeight">44dp</dimen>
+    <!-- 等待层尺寸 -->
+    <dimen name="bri_toast_marginLR">40dp</dimen>
+    <dimen name="bri_toast_marginTB">20dp</dimen>
+    <dimen name="bri_toast_width">150dp</dimen>
+    <dimen name="bri_toast_fill_img_width">48dp</dimen>
+    <dimen name="bri_toast_bank_img_width">80dp</dimen>
+    <dimen name="bri_toast_bank_img_height">40dp</dimen>
+    <dimen name="bri_base_marginTB">10dp</dimen>
+    <dimen name="bri_title_normal_textsize">14sp</dimen>
+    <!-- Default screen margins, per the Android Design guidelines. -->
+    <dimen name="activity_horizontal_margin">16dp</dimen>
+    <dimen name="activity_vertical_margin">16dp</dimen>
+    <dimen name="text_size_16">16sp</dimen>
+    <dimen name="text_size_x">16sp</dimen>
+</resources>

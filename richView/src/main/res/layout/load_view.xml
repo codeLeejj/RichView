@@ -1,0 +1,35 @@
+<?xml version="1.0" encoding="utf-8"?>
+<RelativeLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    android:layout_width="wrap_content"
+    android:layout_height="wrap_content"
+    xmlns:tools="http://schemas.android.com/tools"
+    android:background="@drawable/sp_bg_dialog"
+    android:orientation="vertical">
+
+    <RelativeLayout
+        android:layout_width="@dimen/bri_toast_width"
+        android:layout_height="@dimen/bri_toast_width"
+        android:background="@drawable/sp_bg_dialog"
+        android:gravity="center">
+
+        <androidx.appcompat.widget.AppCompatImageView
+            android:id="@+id/indication"
+            android:layout_width="@dimen/bri_toast_bank_img_width"
+            android:layout_height="@dimen/bri_toast_bank_img_width"
+            android:layout_centerHorizontal="true" />
+
+        <TextView
+            android:id="@+id/promptTV"
+            tools:text="text"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_below="@id/indication"
+            android:layout_centerHorizontal="true"
+            android:layout_marginTop="@dimen/bri_base_marginTB"
+            android:gravity="center"
+            android:minWidth="@dimen/bri_toast_fill_img_width"
+            android:textColor="@color/white"
+            android:textSize="@dimen/text_size_16" />
+    </RelativeLayout>
+
+</RelativeLayout>

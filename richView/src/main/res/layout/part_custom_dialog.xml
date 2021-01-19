@@ -1,0 +1,102 @@
+<?xml version="1.0" encoding="utf-8"?>
+<androidx.constraintlayout.widget.ConstraintLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:app="http://schemas.android.com/apk/res-auto"
+    xmlns:tools="http://schemas.android.com/tools"
+    android:layout_width="match_parent"
+    android:layout_height="wrap_content"
+    android:background="@drawable/sp_bg_shadow"
+    android:maxHeight="250dp">
+
+    <TextView
+        android:id="@+id/tvTitle"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_marginTop="@dimen/marginWindow_x2"
+        android:gravity="center"
+        android:lines="1"
+        android:paddingLeft="@dimen/marginWindow_x2"
+        android:paddingRight="@dimen/marginWindow_x2"
+        android:textColor="#000010"
+        android:textSize="17sp"
+        app:layout_constraintLeft_toLeftOf="parent"
+        app:layout_constraintRight_toRightOf="parent"
+        app:layout_constraintTop_toTopOf="parent"
+        tools:text="提示标题" />
+
+    <TextView
+        android:id="@+id/tvContent"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_marginTop="@dimen/marginWindowS"
+        android:ellipsize="end"
+        android:gravity="center_horizontal"
+        android:maxLines="4"
+        android:minHeight="20dp"
+        android:textColor="#656565"
+        android:paddingLeft="@dimen/marginWindow_x2"
+        android:paddingRight="@dimen/marginWindow_x2"
+        app:layout_constraintLeft_toLeftOf="parent"
+        app:layout_constraintRight_toRightOf="parent"
+        app:layout_constraintTop_toBottomOf="@+id/tvTitle"
+        tools:text="说明文字说明文字说明文字说明文字说说明文字说明文字说明文字说明文字说明文字说明文字说明文字说明文字说明文字说明文字说明文字说明文字明文字说明文字" />
+
+    <View
+        android:id="@+id/viewSplit"
+        android:layout_width="match_parent"
+        android:layout_height="0.5dp"
+        android:layout_marginTop="@dimen/marginWindow_x2"
+        android:background="#cbcbcb"
+        app:layout_constraintTop_toBottomOf="@+id/tvContent" />
+
+    <Button
+        android:id="@+id/bt_Cancel"
+        android:layout_width="0dp"
+        android:layout_height="@dimen/dialogButtonHeight"
+        android:layout_marginRight="0.5dp"
+        android:background="@drawable/selector_dialog_bt_left"
+        android:lines="1"
+        android:text="取消"
+        android:textColor="@color/primaryColor"
+        android:textSize="18sp"
+        app:layout_constraintLeft_toLeftOf="parent"
+        app:layout_constraintRight_toLeftOf="@+id/viewSplitButton"
+        app:layout_constraintTop_toBottomOf="@+id/viewSplit" />
+
+    <View
+        android:id="@+id/viewSplitButton"
+        android:layout_width="0.5dp"
+        android:layout_height="20dp"
+        android:background="#cbcbcb"
+        android:lines="1"
+        app:layout_constraintBottom_toBottomOf="parent"
+        app:layout_constraintLeft_toLeftOf="parent"
+        app:layout_constraintRight_toRightOf="parent"
+        app:layout_constraintTop_toBottomOf="@+id/viewSplit" />
+
+    <Button
+        android:id="@+id/bt_OK"
+        android:layout_width="0dp"
+        android:layout_height="@dimen/dialogButtonHeight"
+        android:layout_marginLeft="0.5dp"
+        android:background="@drawable/selector_dialog_bt_rifht"
+        android:lines="1"
+        android:text="确认"
+        android:textColor="@color/primaryColor"
+        android:textSize="18sp"
+        app:layout_constraintLeft_toRightOf="@+id/viewSplitButton"
+        app:layout_constraintRight_toRightOf="parent"
+        app:layout_constraintTop_toBottomOf="@+id/viewSplit" />
+
+    <Button
+        android:id="@+id/btOK"
+        android:layout_width="match_parent"
+        android:layout_height="@dimen/dialogButtonHeight"
+        android:background="@drawable/selector_dialog_bt"
+        android:lines="1"
+        android:text="确  认"
+        android:textColor="@color/primaryColor"
+        android:textSize="18sp"
+        app:layout_constraintTop_toBottomOf="@+id/viewSplit"
+        tools:visibility="gone" />
+
+</androidx.constraintlayout.widget.ConstraintLayout>
