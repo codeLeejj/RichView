@@ -6,9 +6,9 @@ import android.widget.Toast;
 
 import androidx.annotation.StringRes;
 
-public final class ToastTools {
+public final class ToastTool {
 
-    private ToastTools() throws IllegalAccessException {
+    private ToastTool() throws IllegalAccessException {
         throw new IllegalAccessException("工具类无法实例化!");
     }
 
