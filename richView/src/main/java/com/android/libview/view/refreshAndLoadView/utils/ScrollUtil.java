@@ -2,6 +2,7 @@ package com.android.libview.view.refreshAndLoadView.utils;
 
 import android.view.View;
 import android.view.ViewGroup;
+import android.widget.Adapter;
 import android.widget.AdapterView;
 
 import androidx.annotation.NonNull;
@@ -68,7 +69,7 @@ public class ScrollUtil {
     /**
      * 判断是否滑动到了底部
      *
-     * @param scroller
+     * @param scroller 支持对 RecycleView,AdapterView的判断
      * @return
      */
     public static boolean hadScrolledBottom(@NonNull View scroller) {
@@ -91,7 +92,7 @@ public class ScrollUtil {
             int lastChildBottom = childAt.getBottom();
             return rvTop <= 0 && rvHeight >= lastChildBottom;
         } else if (scroller instanceof AdapterView) {
-            AdapterView adapterView = (AdapterView) scroller;
+            AdapterView<Adapter> adapterView = (AdapterView<Adapter>) scroller;
             int count = adapterView.getCount();
             if (count == 0) {
                 return true;//这里改false,还是true呢

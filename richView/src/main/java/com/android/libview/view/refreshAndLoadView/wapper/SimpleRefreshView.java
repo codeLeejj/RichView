@@ -38,13 +38,10 @@ public class SimpleRefreshView extends ARefreshView {
         LayoutInflater.from(getContext()).inflate(R.layout.simple_refresh_header, this, true);
 
         tvContent = findViewById(R.id.tvContent);
-        tvContent.setTextColor(Color.WHITE);
-        tvContent.setBackgroundColor(Color.RED);
-        tvContent.setText("头部刷新");
     }
 
     @Override
-    public void setState(State state) {
-
+    public void setState(State state,int expandHeight) {
+        tvContent.setText(state +": "+ expandHeight);
     }
 }

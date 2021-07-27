@@ -72,7 +72,7 @@ public class RefreshAndLoadViewTestActivity extends AppCompatActivity {
 
         adapter = new MyAdapter();
         rv.setAdapter(adapter);
-        data = generateData(16);
+        data = generateData(10);
 
         adapter.notifyDataSetChanged();
     }

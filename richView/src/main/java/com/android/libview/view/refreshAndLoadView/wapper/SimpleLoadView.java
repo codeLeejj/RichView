@@ -31,17 +31,19 @@ public class SimpleLoadView extends ALoadView {
         super(context, attrs, defStyleAttr);
     }
 
-    TextView tv;
+    TextView tvContent;
 
     @Override
     public void init() {
         LayoutInflater.from(getContext()).inflate(R.layout.simple_load_view, this, true);
-        tv = findViewById(R.id.tvContent);
-        tv.setBackgroundColor(Color.MAGENTA);
+
+        tvContent = findViewById(R.id.tvContent);
+        tvContent.setBackgroundColor(Color.MAGENTA);
     }
 
     @Override
-    public void setState(State state) {
+    public void setState(State state, int expandHeight) {
 
+        tvContent.setText(state + ": " + expandHeight);
     }
 }

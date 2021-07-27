@@ -39,11 +39,11 @@ public class RefreshAndLoadView extends FrameLayout implements IRefreshAndLoadVi
         void onLoad();
     }
 
-    enum DYNAMIC {
+    private enum DYNAMIC {
         /**
          * 初始状态
          */
-        DYNAMIC_TYPE_NORMAL,
+        DYNAMIC_TYPE_INITIAL,
         /**
          * 下拉刷新状态
          */
@@ -87,7 +87,7 @@ public class RefreshAndLoadView extends FrameLayout implements IRefreshAndLoadVi
     /**
      * 标记当前处于什么状态
      */
-    private DYNAMIC dynamicType = DYNAMIC.DYNAMIC_TYPE_NORMAL;
+    private DYNAMIC dynamicType = DYNAMIC.DYNAMIC_TYPE_INITIAL;
 
     /**
      * 当前的上拉加载or下拉刷新的状态
@@ -120,7 +120,7 @@ public class RefreshAndLoadView extends FrameLayout implements IRefreshAndLoadVi
 
     @Override
     public boolean dispatchTouchEvent(MotionEvent ev) {
-        if (mRefreshView == null && mLoadView == null) {
+        if ((loadListener == null && refreshListener == null)) {
             return super.dispatchTouchEvent(ev);
         }
         if (mState == State.STATE_REFRESH_OR_LOAD || mState == State.STATE_PACK_UP) {
@@ -135,22 +135,26 @@ public class RefreshAndLoadView extends FrameLayout implements IRefreshAndLoadVi
                 recoverTail();
                 return true;
             }
+            Log.w("RefreshAndLoadView", "return false dispatchTouchEvent  1111");
             return false;
         }
         boolean consumed = gestureDetector.onTouchEvent(ev);
-        if (consumed) {
-            return true;
-        } else {
-            return super.dispatchTouchEvent(ev);
+        if (!consumed) {
+            Log.w("RefreshAndLoadView", "return false dispatchTouchEvent  2222");
+            if (dynamicType == DYNAMIC.DYNAMIC_TYPE_INITIAL) {
+                return super.dispatchTouchEvent(ev);
+            }
         }
+        return true;
     }
 
-    GestureDetector gestureDetector = new GestureDetector(getContext(), new GestureDetector.OnGestureListener() {
+    private GestureDetector gestureDetector = new GestureDetector(getContext(), new GestureDetector.OnGestureListener() {
 
         @Override
         public boolean onScroll(MotionEvent e1, MotionEvent e2, float distanceX, float distanceY) {
             //左右滑动
-            if (Math.abs(distanceX) > Math.abs(distanceY)) {
+            if (Math.abs(distanceX) > Math.abs(distanceY) && mState == State.STATE_INITIAL) {
+                Log.w("RefreshAndLoadView", "return false  111  dynamicType:" + dynamicType);
                 return false;
             }
             //正在刷新 or 正在收起  -> 拦截事件   (防止触发第二次刷新和子视图滚动)
@@ -159,6 +163,7 @@ public class RefreshAndLoadView extends FrameLayout implements IRefreshAndLoadVi
             }
             scrollView = ScrollUtil.getScrollView(RefreshAndLoadView.this);
             if (scrollView == null) {
+                Log.w("RefreshAndLoadView", "return false scrollView == null");
                 return false;
             }
             boolean hadScrolled = ScrollUtil.hadScrolled(scrollView);
@@ -166,51 +171,48 @@ public class RefreshAndLoadView extends FrameLayout implements IRefreshAndLoadVi
             Log.w("RefreshAndLoadView", "onScroll -> hadScrolled:" + hadScrolled + "    hadScrolledBottom:" + hadScrolledBottom);
 
             boolean handle = false;
-            //3.scrollView 还在滚动
-            //1.头部已经滑出
-            //2.初始状态
-            //4.底部滑出
+            //事件 : 1.上拉,2.下拉
+            //状态: 1.初始, 2.内容滑动了,3.头部出来,4.尾部出来了,5.刷新或加载
             int scrollViewTop = scrollView.getTop();
             if (distanceY > 0) {//上拉
-                //0.内容滑动
-                //1.初始状态
-                //2.头部已划出
-                //3.底部已划出
-
                 //底部内容
                 if (hadScrolled) {
                     if (hadScrolledBottom && dynamicType != DYNAMIC.DYNAMIC_TYPE_REFRESH) {
                         handle = moveTail(-distanceY, true);
-                    } else {
-                        return false;
-                    }
-                } else if (dynamicType == DYNAMIC.DYNAMIC_TYPE_NORMAL) {
+                    } else return dynamicType != DYNAMIC.DYNAMIC_TYPE_INITIAL;
+                } else if (dynamicType == DYNAMIC.DYNAMIC_TYPE_INITIAL) {
+                    Log.w("RefreshAndLoadView", "return false  3333 上拉 -> dynamicType:" + dynamicType + "   scrollViewTop:" + scrollViewTop + "    hadScrolledBottom:" + hadScrolledBottom);
                     return false;
                 } else if (scrollViewTop > 0) {
                     handle = moveHeader(distanceY, true);
                 } else if (scrollViewTop < 0 && dynamicType != DYNAMIC.DYNAMIC_TYPE_REFRESH) {
                     handle = moveTail(-distanceY, true);
                 } else {
+                    Log.w("RefreshAndLoadView", "return false  4444 上拉 -> dynamicType:" + dynamicType + "   scrollViewTop:" + scrollViewTop + "    hadScrolledBottom:" + hadScrolledBottom);
                     return false;
                 }
             } else {//下拉
-                //0.内容滑动
-                //1.初始状态
-                //2.头部已划出
-                //3.底部已划出
-
                 //头部内容
                 if (hadScrolled) {
-                    return false;
-                } else if (dynamicType == DYNAMIC.DYNAMIC_TYPE_NORMAL) {
+                    Log.w("RefreshAndLoadView", "onScroll false  5555 下拉 -> dynamicType:" + dynamicType + "   scrollViewTop:" + scrollViewTop + "    hadScrolledBottom:" + hadScrolledBottom);
+                    if (hadScrolledBottom) {
+                        handle = moveTail(-distanceY, true);
+                    } else {
+                        return false;
+                    }
+                } else if (dynamicType == DYNAMIC.DYNAMIC_TYPE_INITIAL) {
                     handle = moveHeader(distanceY, true);
                 } else if (scrollViewTop > 0 && dynamicType != DYNAMIC.DYNAMIC_TYPE_LOAD) {
                     handle = moveHeader(distanceY, true);
                 } else if (scrollViewTop < 0 && dynamicType != DYNAMIC.DYNAMIC_TYPE_REFRESH) {
                     handle = moveTail(-distanceY, true);
                 } else {
+                    Log.w("RefreshAndLoadView", "onScroll false  6666 下拉 -> dynamicType:" + dynamicType + "   scrollViewTop:" + scrollViewTop + "    hadScrolledBottom:" + hadScrolledBottom);
                     return false;
                 }
+            }
+            if (!handle) {
+                Log.w("RefreshAndLoadView", "onScroll false  7777 下拉 -> dynamicType:" + dynamicType + "   scrollViewTop:" + scrollViewTop + "    hadScrolledBottom:" + hadScrolledBottom);
             }
             return handle;
         }
@@ -223,7 +225,6 @@ public class RefreshAndLoadView extends FrameLayout implements IRefreshAndLoadVi
 
         @Override
         public void onShowPress(MotionEvent e) {
-
         }
 
         @Override
@@ -233,7 +234,6 @@ public class RefreshAndLoadView extends FrameLayout implements IRefreshAndLoadVi
 
         @Override
         public void onLongPress(MotionEvent e) {
-
         }
 
         @Override
@@ -249,7 +249,7 @@ public class RefreshAndLoadView extends FrameLayout implements IRefreshAndLoadVi
      * @return
      */
     private boolean moveHeader(float distanceY, boolean userControl) {
-        if (userControl && !refreshable) {
+        if (userControl && !refreshable || dynamicType == DYNAMIC.DYNAMIC_TYPE_LOAD) {
             return false;
         }
         View header = getChildAt(0);
@@ -265,8 +265,7 @@ public class RefreshAndLoadView extends FrameLayout implements IRefreshAndLoadVi
         header.offsetTopAndBottom(-(int) distanceY);
         scroller.offsetTopAndBottom(-(int) distanceY);
         Log.w("RefreshAndLoadView", "moveHeader -> header:" + header.getBottom() + "     scroller:" + scroller.getTop());
-
-        setState(userControl);
+        setStateAndNotify(userControl);
         return true;
     }
 
@@ -277,7 +276,7 @@ public class RefreshAndLoadView extends FrameLayout implements IRefreshAndLoadVi
      * @return
      */
     private boolean moveTail(float distanceY, boolean userControl) {
-        if (userControl && !loadable)
+        if (userControl && !loadable || dynamicType == DYNAMIC.DYNAMIC_TYPE_REFRESH)
             return false;
         Log.w("RefreshAndLoadView", "moveTail distanceY:" + distanceY);
 
@@ -291,7 +290,7 @@ public class RefreshAndLoadView extends FrameLayout implements IRefreshAndLoadVi
             mLoadView.offsetTopAndBottom((int) distanceY);
             Log.w("RefreshAndLoadView", "moveTail scrollView:" + scrollView.getTop() + "     mLoadView:" + mLoadView.getTop() + " ----- ");
         }
-        setState(userControl);
+        setStateAndNotify(userControl);
         return true;
     }
 
@@ -299,12 +298,7 @@ public class RefreshAndLoadView extends FrameLayout implements IRefreshAndLoadVi
      * 自动滑动完成
      */
     private void scrollComplete() {
-        int top = scrollView.getTop();
-        if (top == mRefreshHeight || -top == mLoadHeight) {
-            mState = State.STATE_REFRESH_OR_LOAD;
-        } else if (top == 0) {
-            mState = State.STATE_INITIAL;
-        }
+        requestLayout();
     }
 
     /**
@@ -312,12 +306,13 @@ public class RefreshAndLoadView extends FrameLayout implements IRefreshAndLoadVi
      *
      * @param userControl 是否是用户操作的
      */
-    private void setState(boolean userControl) {
+    private void setStateAndNotify(boolean userControl) {
         scrollView = ScrollUtil.getScrollView(RefreshAndLoadView.this);
         int scrollTop = scrollView.getTop();
         if (userControl) {
             //操作类型在用户一次操作内只允许被修改一次
-            if (dynamicType != DYNAMIC.DYNAMIC_TYPE_NORMAL) {
+            if (dynamicType != DYNAMIC.DYNAMIC_TYPE_INITIAL) {
+                broadcastState();
                 return;
             }
             //用户操作不存在初始状态,初始状态应该有scroller来达到
@@ -337,7 +332,7 @@ public class RefreshAndLoadView extends FrameLayout implements IRefreshAndLoadVi
         } else {
             if (scrollTop == 0) {
                 mState = State.STATE_INITIAL;
-                dynamicType = DYNAMIC.DYNAMIC_TYPE_NORMAL;
+                dynamicType = DYNAMIC.DYNAMIC_TYPE_INITIAL;
                 removeCallbacks(autoScroll);
                 requestLayout();
             } else if (scrollTop == mRefreshHeight && dynamicType == DYNAMIC.DYNAMIC_TYPE_REFRESH) {
@@ -359,7 +354,19 @@ public class RefreshAndLoadView extends FrameLayout implements IRefreshAndLoadVi
 
         Log.w("RefreshAndLoadView", "0 bottom:" + getChildAt(0).getBottom() +
                 "     1 top:" + getChildAt(1).getTop()
-                + "     2 top:" + +getChildAt(2).getTop());
+                + "     2 top:" + getChildAt(2).getTop());
+        broadcastState();
+    }
+
+    /**
+     * 向头部刷新或底部加载广播事件
+     */
+    private void broadcastState() {
+        if (dynamicType == DYNAMIC.DYNAMIC_TYPE_LOAD && mLoadView != null) {
+            mLoadView.setState(mState, scrollView.getMeasuredHeight() - mLoadView.getTop());
+        } else if (dynamicType == DYNAMIC.DYNAMIC_TYPE_REFRESH && mRefreshView != null) {
+            mRefreshView.setState(mState, mRefreshView.getBottom());
+        }
     }
 
     /**
@@ -392,7 +399,7 @@ public class RefreshAndLoadView extends FrameLayout implements IRefreshAndLoadVi
 
     AutoScroll autoScroll;
 
-    class AutoScroll implements Runnable {
+    private class AutoScroll implements Runnable {
         private Scroller scroller;
         private int lastY;
         private int total;
@@ -419,10 +426,11 @@ public class RefreshAndLoadView extends FrameLayout implements IRefreshAndLoadVi
                     moveTail(xY, false);
                     post(this);
                 } else {
+                    setStateAndNotify(false);
                     removeCallbacks(this);
-                    setState(false);
                 }
             } else {
+                scrollComplete();
                 removeCallbacks(this);
             }
         }
