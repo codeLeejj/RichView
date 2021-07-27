@@ -14,5 +14,5 @@ public interface DynamicView {
      * @param state
      * @param expandHeight 膨胀高度,也是可视高度
      */
-    void setState(State state, int expandHeight);
+    void setState(State state, int expandHeight, int refreshOrLoadHeight);
 }

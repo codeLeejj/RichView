@@ -55,6 +55,10 @@ public class RefreshAndLoadView extends FrameLayout implements IRefreshAndLoadVi
     }
 
     /**
+     * 默认刷新or加载的高度
+     */
+    private static final int REFRESH_LOAD_HEIGHT = 55;
+    /**
      * 滑动阻尼
      */
     private static final float REFRESH_DAMP = 1.9f;
@@ -87,6 +91,7 @@ public class RefreshAndLoadView extends FrameLayout implements IRefreshAndLoadVi
     /**
      * 标记当前处于什么状态
      */
+    private DYNAMIC lastDynamicType = DYNAMIC.DYNAMIC_TYPE_INITIAL;
     private DYNAMIC dynamicType = DYNAMIC.DYNAMIC_TYPE_INITIAL;
 
     /**
@@ -135,13 +140,12 @@ public class RefreshAndLoadView extends FrameLayout implements IRefreshAndLoadVi
                 recoverTail();
                 return true;
             }
-            Log.w("RefreshAndLoadView", "return false dispatchTouchEvent  1111");
             return false;
         }
         boolean consumed = gestureDetector.onTouchEvent(ev);
         if (!consumed) {
-            Log.w("RefreshAndLoadView", "return false dispatchTouchEvent  2222");
             if (dynamicType == DYNAMIC.DYNAMIC_TYPE_INITIAL) {
+                Log.w("RefreshAndLoadView", "return false dispatchTouchEvent  2222");
                 return super.dispatchTouchEvent(ev);
             }
         }
@@ -363,10 +367,17 @@ public class RefreshAndLoadView extends FrameLayout implements IRefreshAndLoadVi
      */
     private void broadcastState() {
         if (dynamicType == DYNAMIC.DYNAMIC_TYPE_LOAD && mLoadView != null) {
-            mLoadView.setState(mState, scrollView.getMeasuredHeight() - mLoadView.getTop());
+            mLoadView.setState(mState, scrollView.getMeasuredHeight() - mLoadView.getTop(), mLoadHeight);
         } else if (dynamicType == DYNAMIC.DYNAMIC_TYPE_REFRESH && mRefreshView != null) {
-            mRefreshView.setState(mState, mRefreshView.getBottom());
+            mRefreshView.setState(mState, mRefreshView.getBottom(), mRefreshHeight);
+        } else if (dynamicType == DYNAMIC.DYNAMIC_TYPE_INITIAL) {
+            if (lastDynamicType == DYNAMIC.DYNAMIC_TYPE_LOAD) {
+                mLoadView.setState(mState, 0, mLoadHeight);
+            } else if (lastDynamicType == DYNAMIC.DYNAMIC_TYPE_REFRESH) {
+                mRefreshView.setState(mState, 0, mRefreshHeight);
+            }
         }
+        lastDynamicType = dynamicType;
     }
 
     /**
@@ -453,7 +464,7 @@ public class RefreshAndLoadView extends FrameLayout implements IRefreshAndLoadVi
     /**********************头部刷新的内容***************************/
     @Override
     public void setRefreshView(ARefreshView refreshView) {
-        setRefreshView(refreshView, dp2px(50, getResources()));
+        setRefreshView(refreshView, dp2px(REFRESH_LOAD_HEIGHT, getResources()));
     }
 
     @Override
@@ -490,7 +501,7 @@ public class RefreshAndLoadView extends FrameLayout implements IRefreshAndLoadVi
     /**********************底部刷新的内容***************************/
     @Override
     public void setLoadView(ALoadView loadView) {
-        setLoadView(loadView, dp2px(50, getResources()));
+        setLoadView(loadView, dp2px(REFRESH_LOAD_HEIGHT, getResources()));
     }
 
     @Override

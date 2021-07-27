@@ -9,6 +9,7 @@ import android.widget.TextView;
 import androidx.annotation.NonNull;
 import androidx.annotation.Nullable;
 
+import com.airbnb.lottie.LottieAnimationView;
 import com.android.libview.R;
 import com.android.libview.view.refreshAndLoadView.contract.ALoadView;
 import com.android.libview.view.refreshAndLoadView.contract.State;
@@ -31,19 +32,29 @@ public class SimpleLoadView extends ALoadView {
         super(context, attrs, defStyleAttr);
     }
 
-    TextView tvContent;
+    LottieAnimationView lottieAnimationView;
 
     @Override
     public void init() {
         LayoutInflater.from(getContext()).inflate(R.layout.simple_load_view, this, true);
 
-        tvContent = findViewById(R.id.tvContent);
-        tvContent.setBackgroundColor(Color.MAGENTA);
+        lottieAnimationView = findViewById(R.id.lottieView);
     }
 
     @Override
-    public void setState(State state, int expandHeight) {
-
-        tvContent.setText(state + ": " + expandHeight);
+    public void setState(State state, int expandHeight, int refreshOrLoadHeight) {
+        if (State.STATE_PULLING == state || State.STATE_PACK_UP == state) {
+            if (expandHeight >= getMeasuredHeight()) {
+                float scale = 1 + ((expandHeight - getMeasuredHeight()) * 1.0f / refreshOrLoadHeight);
+                if (scale >= 2) scale = 2;
+                lottieAnimationView.setScaleX(scale);
+                lottieAnimationView.setScaleY(scale);
+            }
+        } else if (State.STATE_REFRESH_OR_LOAD == state) {
+            lottieAnimationView.playAnimation();
+        } else if (State.STATE_INITIAL == state) {
+            lottieAnimationView.cancelAnimation();
+            lottieAnimationView.setFrame(0);
+        }
     }
 }
