@@ -6,9 +6,21 @@
     android:layout_height="match_parent"
     tools:context=".MainActivity">
 
-    <Button
-        android:id="@+id/btRefreshAndLoad"
+    <androidx.appcompat.widget.LinearLayoutCompat
         android:layout_width="match_parent"
-        android:layout_height="wrap_content"
-        android:text="下拉刷新.上拉加载" />
+        android:layout_height="match_parent"
+        android:orientation="vertical">
+
+        <Button
+            android:id="@+id/btRefreshAndLoad"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:text="下拉刷新.上拉加载" />
+
+        <Button
+            android:id="@+id/btBanner"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:text="自定义Banner" />
+    </androidx.appcompat.widget.LinearLayoutCompat>
 </ScrollView>
