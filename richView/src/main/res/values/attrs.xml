@@ -14,9 +14,14 @@
         <attr name="backgroundColor" format="color" />
     </declare-styleable>
     <declare-styleable name="Banner">
+        <attr name="indicator" format="string" />
+        <eat-comment />
+
         <attr name="autoPlay" format="boolean" />
         <attr name="loop" format="boolean" />
         <attr name="interval" format="integer" />
         <attr name="duration" format="integer" />
+        <attr name="indicatorXRatio" format="float" />
+        <attr name="indicatorYRatio" format="float" />
     </declare-styleable>
 </resources>

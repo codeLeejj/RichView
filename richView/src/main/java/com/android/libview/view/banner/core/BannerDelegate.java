@@ -4,6 +4,8 @@ import android.animation.Animator;
 import android.animation.ValueAnimator;
 import android.content.Context;
 import android.os.Handler;
+import android.util.Log;
+import android.view.ViewGroup;
 import android.view.animation.LinearInterpolator;
 import android.widget.FrameLayout;
 
@@ -33,18 +35,74 @@ public class BannerDelegate<T> implements IBanner<T> {
      * 动画持续时间(单位: 毫秒)
      */
     private int duration;
+    /**
+     * 指示器
+     */
+    AIndicator indicator;
+    /**
+     * 指示器在Banner中,x方向的百分比
+     */
+    private float xRatio;
+    /**
+     * 指示器在Banner中,y方向的百分比
+     */
+    private float yRatio;
 
     private final ViewPager2 mViewPager;
-
     private final BannerAdapter<T> mAdapter;
-    public BannerDelegate(Context mContext, Banner<T> mBanner) {
+    Banner<T> mBanner;
+
+    private ViewPager2.OnPageChangeCallback mPageChangeCallback;
+    private int startIndex = -1;
+    private boolean toRight = false;
+
+    public BannerDelegate(Context mContext, Banner<T> banner) {
         mViewPager = new ViewPager2(mContext);
         mViewPager.setOrientation(ViewPager2.ORIENTATION_HORIZONTAL);
         mAdapter = new BannerAdapter<>();
         mViewPager.setAdapter(mAdapter);
-        mBanner.addView(mViewPager, new FrameLayout.LayoutParams(FrameLayout.LayoutParams.MATCH_PARENT, FrameLayout.LayoutParams.MATCH_PARENT));
+        mViewPager.registerOnPageChangeCallback(new ViewPager2.OnPageChangeCallback() {
+            @Override
+            public void onPageSelected(int position) {
+                super.onPageSelected(position);
+                if (mPageChangeCallback != null) {
+                    mPageChangeCallback.onPageSelected(position);
+                }
+                if (indicator != null) {
+                    indicator.changeIndex(mAdapter.getRealIndex(position));
+                }
+                startIndex = position;
+            }
 
-        mViewPager.postDelayed(() -> initAnimator(), 1_000);
+            @Override
+            public void onPageScrolled(int position, float positionOffset, int positionOffsetPixels) {
+                super.onPageScrolled(position, positionOffset, positionOffsetPixels);
+                if (mPageChangeCallback != null) {
+                    mPageChangeCallback.onPageScrolled(position, positionOffset, positionOffsetPixels);
+                }
+                if (indicator != null) {
+                    Log.w("BannerDelegate", "position:" + position + "     offset:" + positionOffset + "      offsetPixels:" + positionOffsetPixels);
+                    if (position > startIndex) {
+                        toRight = true;
+                    } else {
+                        toRight = false;
+                    }
+                    indicator.pageScrolled(positionOffset,toRight);
+                }
+            }
+
+            @Override
+            public void onPageScrollStateChanged(int state) {
+                super.onPageScrollStateChanged(state);
+                if (mPageChangeCallback != null) {
+                    mPageChangeCallback.onPageScrollStateChanged(state);
+                }
+            }
+        });
+
+        banner.addView(mViewPager, new FrameLayout.LayoutParams(FrameLayout.LayoutParams.MATCH_PARENT, FrameLayout.LayoutParams.MATCH_PARENT));
+        mBanner = banner;
+        mViewPager.postDelayed(() -> initAnimator(), 100);
     }
 
     public boolean isAutoPlay() {
@@ -86,7 +144,7 @@ public class BannerDelegate<T> implements IBanner<T> {
             int offset = mAdapter.getRealIndex(mViewPager.getCurrentItem());
             mViewPager.setCurrentItem(mAdapter.getFirstItem() + offset, false);
         }
-        if(loop){
+        if (loop) {
             start();
         }
         //Cannot change current item when ViewPager2 is fake dragging
@@ -115,6 +173,54 @@ public class BannerDelegate<T> implements IBanner<T> {
     }
 
     @Override
+    public void gotSize(int width, int height) {
+        int indicatorHeight = this.indicator.getMeasuredHeight();
+        int indicatorWidth = this.indicator.getMeasuredWidth();
+
+        float top = (height - indicatorHeight) * yRatio;
+        float left = (width - indicatorWidth) * xRatio;
+        indicator.setX(left);
+        indicator.setY(top);
+    }
+
+    @Override
+    public void setIndicatorXRatio(float xRatio) {
+        this.xRatio = xRatio;
+    }
+
+    @Override
+    public void setIndicatorYRatio(float yRatio) {
+        this.yRatio = yRatio;
+    }
+
+    @Override
+    public void setIndicator(AIndicator indicator) {
+        setIndicator(indicator, xRatio, yRatio);
+    }
+
+    @Override
+    public void setIndicator(AIndicator indicator, float xRatio, float yRatio) {
+        if (xRatio == 0f && yRatio == 0f) {
+            //设置默认值
+            xRatio = 0.5f;
+            yRatio = 1.0f;
+        }
+        if (this.indicator != null && this.indicator.getParent() != null) {
+            mBanner.removeView(indicator);
+        }
+        this.indicator = indicator;
+        this.xRatio = xRatio;
+        this.yRatio = yRatio;
+
+        int itemCount = mAdapter.getItemCount();
+        this.indicator.setTotal(itemCount);
+        this.indicator.changeIndex(0);
+
+        FrameLayout.LayoutParams layoutParams = new FrameLayout.LayoutParams(ViewGroup.LayoutParams.WRAP_CONTENT, ViewGroup.LayoutParams.WRAP_CONTENT);
+        mBanner.addView(indicator, layoutParams);
+    }
+
+    @Override
     public void setLifecycle(@NonNull Lifecycle lifecycle) {
         lifecycle.addObserver((LifecycleEventObserver) (source, event) -> {
             if (Lifecycle.Event.ON_RESUME == event) {
@@ -127,8 +233,7 @@ public class BannerDelegate<T> implements IBanner<T> {
 
     @Override
     public void registerOnPageChangeCallback(ViewPager2.OnPageChangeCallback onPageChangeCallback) {
-//        this.mPageChangeCallback = onPageChangeCallback;
-        mViewPager.registerOnPageChangeCallback(onPageChangeCallback);
+        this.mPageChangeCallback = onPageChangeCallback;
     }
 
     @Override
@@ -145,6 +250,11 @@ public class BannerDelegate<T> implements IBanner<T> {
         mAdapter.setData(data);
         start();
         mViewPager.setCurrentItem(mAdapter.getFirstItem(), false);
+
+        if (this.indicator != null) {
+            this.indicator.setTotal(data.size());
+            this.indicator.changeIndex(0);
+        }
     }
 
     private Handler handler = new Handler();
@@ -186,6 +296,7 @@ public class BannerDelegate<T> implements IBanner<T> {
             mViewPager.fakeDragBy(-currentPxToDrag);
             previousValue = currentValue;
         });
+
         animator.addListener(new Animator.AnimatorListener() {
             @Override
             public void onAnimationStart(Animator animation) {

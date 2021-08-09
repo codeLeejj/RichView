@@ -12,7 +12,16 @@
         android:layout_height="220dp"
         app:autoPlay="true"
         app:duration="2000"
+        app:indicator="com.android.libview.view.banner.indicator.TextIndicator"
+        app:indicatorXRatio="0.98"
+        app:indicatorYRatio="0.98"
         app:interval="4000"
         app:layout_constraintTop_toTopOf="parent"
         app:loop="true" />
+
+    <androidx.recyclerview.widget.RecyclerView
+        android:layout_width="match_parent"
+        android:layout_height="0dp"
+        app:layoutManager="androidx.recyclerview.widget.LinearLayoutManager"
+        app:layout_constraintTop_toBottomOf="@+id/banner" />
 </androidx.constraintlayout.widget.ConstraintLayout>

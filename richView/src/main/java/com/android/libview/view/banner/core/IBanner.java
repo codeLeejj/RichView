@@ -1,5 +1,6 @@
 package com.android.libview.view.banner.core;
 
+import androidx.annotation.FloatRange;
 import androidx.annotation.IntRange;
 import androidx.annotation.NonNull;
 import androidx.lifecycle.Lifecycle;
@@ -19,6 +20,7 @@ import java.util.List;
  * @param <T>
  */
 public interface IBanner<T> {
+
     /**
      * 设置自动播放
      * 自动播放和轮询是两个不太相关的属性,开启自动播放后 banner 会不断的播放下一个页面,
@@ -48,6 +50,29 @@ public interface IBanner<T> {
      * @param duration
      */
     void setDuration(int duration);
+
+    /**
+     * 依附上了window
+     */
+    void gotSize(int width, int height);
+
+    /**
+     * 指示器在Banner中,x方向的百分比
+     *
+     * @param xRatio
+     */
+    void setIndicatorXRatio(@FloatRange(from = 0.0f, to = 1.0f) float xRatio);
+
+    /**
+     * 指示器在Banner中,y方向的百分比
+     *
+     * @param yRatio
+     */
+    void setIndicatorYRatio(@FloatRange(from = 0.0f, to = 1.0f) float yRatio);
+
+    void setIndicator(AIndicator indicator);
+
+    void setIndicator(AIndicator indicator, @FloatRange(from = 0.0f, to = 1.0f) float xRatio, @FloatRange(from = 0.0f, to = 1.0f) float yRatio);
 
     /**
      * 将ViewPager 页面滚动监听暴露出来

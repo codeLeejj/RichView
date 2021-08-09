@@ -6,6 +6,7 @@ import androidx.appcompat.widget.AppCompatImageView
 import com.android.libview.view.banner.Banner
 import com.android.libview.view.banner.core.BannerAdapter
 import com.android.libview.view.banner.core.IAdapter
+import com.android.libview.view.banner.indicator.TextIndicator
 import com.bumptech.glide.Glide
 import com.lee.richview.R
 
@@ -29,6 +30,7 @@ class BannerDemoActivity : AppCompatActivity() {
                     .into(holder.getView<AppCompatImageView>(R.id.aiv))
             }
         })
+        banner.setIndicator(TextIndicator(baseContext))//, 1f, 1.0f
         //模拟网络延迟
         banner.postDelayed({
             banner.update(
