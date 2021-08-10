@@ -23,5 +23,9 @@
         <attr name="duration" format="integer" />
         <attr name="indicatorXRatio" format="float" />
         <attr name="indicatorYRatio" format="float" />
+        <attr name="colorDefault" format="color" />
+        <attr name="colorSelected" format="color" />
+        <attr name="drawableDefault" format="reference" />
+        <attr name="drawableSelected" format="reference" />
     </declare-styleable>
 </resources>

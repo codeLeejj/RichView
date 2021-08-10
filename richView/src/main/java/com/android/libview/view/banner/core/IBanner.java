@@ -1,5 +1,7 @@
 package com.android.libview.view.banner.core;
 
+import androidx.annotation.ColorInt;
+import androidx.annotation.DrawableRes;
 import androidx.annotation.FloatRange;
 import androidx.annotation.IntRange;
 import androidx.annotation.NonNull;
@@ -50,6 +52,35 @@ public interface IBanner<T> {
      * @param duration
      */
     void setDuration(int duration);
+
+    /**
+     * 设置默认色
+     *
+     * @param defaultColor
+     */
+    void setDefaultColor(@ColorInt int defaultColor);
+
+    /**
+     * 设置选中后的颜色
+     *
+     * @param selectedColor
+     */
+    void setSelectedColor(@ColorInt int selectedColor);
+
+    /**
+     * 设置默认 图标
+     *
+     * @param defaultDrawable
+     */
+    void setDefaultDrawable(@DrawableRes int defaultDrawable);
+
+    /**
+     * 设置选中后的图标
+     *
+     * @param selectedDrawable
+     */
+    void setSelectedDrawable(@DrawableRes int selectedDrawable);
+
 
     /**
      * 依附上了window

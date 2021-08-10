@@ -3,6 +3,7 @@ package com.android.libview.view.banner.core;
 import android.animation.Animator;
 import android.animation.ValueAnimator;
 import android.content.Context;
+import android.graphics.Color;
 import android.os.Handler;
 import android.util.Log;
 import android.view.ViewGroup;
@@ -39,6 +40,23 @@ public class BannerDelegate<T> implements IBanner<T> {
      * 指示器
      */
     AIndicator indicator;
+
+    /**
+     * 指示器默认的颜色
+     */
+    private int defaultColor = AIndicator.DEFAULT_COLOR;
+    /**
+     * 指示器选中后的颜色
+     */
+    private int selectedColor = AIndicator.SELECTED_COLOR;
+    /**
+     * 指示器默认的图标
+     */
+    int defaultDrawable;
+    /**
+     * 指示器选中后的图标
+     */
+    int selectedDrawable;
     /**
      * 指示器在Banner中,x方向的百分比
      */
@@ -53,8 +71,6 @@ public class BannerDelegate<T> implements IBanner<T> {
     Banner<T> mBanner;
 
     private ViewPager2.OnPageChangeCallback mPageChangeCallback;
-    private int startIndex = -1;
-    private boolean toRight = false;
 
     public BannerDelegate(Context mContext, Banner<T> banner) {
         mViewPager = new ViewPager2(mContext);
@@ -64,14 +80,11 @@ public class BannerDelegate<T> implements IBanner<T> {
         mViewPager.registerOnPageChangeCallback(new ViewPager2.OnPageChangeCallback() {
             @Override
             public void onPageSelected(int position) {
+                //滚动过程中就会被调用,所以这个方法不是 滑动停止的标志
                 super.onPageSelected(position);
                 if (mPageChangeCallback != null) {
                     mPageChangeCallback.onPageSelected(position);
                 }
-                if (indicator != null) {
-                    indicator.changeIndex(mAdapter.getRealIndex(position));
-                }
-                startIndex = position;
             }
 
             @Override
@@ -81,13 +94,7 @@ public class BannerDelegate<T> implements IBanner<T> {
                     mPageChangeCallback.onPageScrolled(position, positionOffset, positionOffsetPixels);
                 }
                 if (indicator != null) {
-                    Log.w("BannerDelegate", "position:" + position + "     offset:" + positionOffset + "      offsetPixels:" + positionOffsetPixels);
-                    if (position > startIndex) {
-                        toRight = true;
-                    } else {
-                        toRight = false;
-                    }
-                    indicator.pageScrolled(positionOffset,toRight);
+                    indicator.pageScrolled(mAdapter.getRealIndex(position), positionOffset);
                 }
             }
 
@@ -97,6 +104,12 @@ public class BannerDelegate<T> implements IBanner<T> {
                 if (mPageChangeCallback != null) {
                     mPageChangeCallback.onPageScrollStateChanged(state);
                 }
+                if (ViewPager2.SCROLL_STATE_IDLE == state) {
+                    if (indicator != null) {
+                        indicator.setIndex(mAdapter.getRealIndex(mViewPager.getCurrentItem()));
+                    }
+                }
+                Log.w("BannerDelegate", "onPageScrollStateChanged     --> state:" + state + "-----------------------");
             }
         });
 
@@ -184,6 +197,38 @@ public class BannerDelegate<T> implements IBanner<T> {
     }
 
     @Override
+    public void setDefaultColor(int defaultColor) {
+        this.defaultColor = defaultColor;
+        if (indicator != null) {
+            indicator.setDefaultColor(defaultColor);
+        }
+    }
+
+    @Override
+    public void setSelectedColor(int selectedColor) {
+        this.selectedColor = selectedColor;
+        if (indicator != null) {
+            indicator.setDefaultColor(selectedColor);
+        }
+    }
+
+    @Override
+    public void setDefaultDrawable(int defaultDrawable) {
+        this.defaultDrawable = defaultDrawable;
+        if (indicator != null) {
+            indicator.setDefaultDrawable(defaultDrawable);
+        }
+    }
+
+    @Override
+    public void setSelectedDrawable(int selectedDrawable) {
+        this.selectedDrawable = selectedDrawable;
+        if (indicator != null) {
+            indicator.setSelectedDrawable(selectedDrawable);
+        }
+    }
+
+    @Override
     public void setIndicatorXRatio(float xRatio) {
         this.xRatio = xRatio;
     }
@@ -214,10 +259,15 @@ public class BannerDelegate<T> implements IBanner<T> {
 
         int itemCount = mAdapter.getItemCount();
         this.indicator.setTotal(itemCount);
-        this.indicator.changeIndex(0);
+        this.indicator.setIndex(0);
+
+        this.indicator.setSelectedColor(selectedColor);
+        this.indicator.setDefaultColor(defaultColor);
+        this.indicator.setDefaultDrawable(defaultDrawable);
+        this.indicator.setSelectedDrawable(selectedDrawable);
 
         FrameLayout.LayoutParams layoutParams = new FrameLayout.LayoutParams(ViewGroup.LayoutParams.WRAP_CONTENT, ViewGroup.LayoutParams.WRAP_CONTENT);
-        mBanner.addView(indicator, layoutParams);
+        mBanner.addView(this.indicator, layoutParams);
     }
 
     @Override
@@ -253,7 +303,7 @@ public class BannerDelegate<T> implements IBanner<T> {
 
         if (this.indicator != null) {
             this.indicator.setTotal(data.size());
-            this.indicator.changeIndex(0);
+            this.indicator.setIndex(0);
         }
     }
 

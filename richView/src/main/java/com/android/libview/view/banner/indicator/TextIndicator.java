@@ -1,7 +1,6 @@
 package com.android.libview.view.banner.indicator;
 
 import android.content.Context;
-import android.graphics.Color;
 import android.util.AttributeSet;
 import android.view.Gravity;
 import android.view.ViewGroup;
@@ -37,22 +36,37 @@ public class TextIndicator extends AIndicator {
         }
 
         textView = new TextView(context);
-        textView.setTextColor(Color.parseColor("#333333"));
         textView.setTextSize(14f);
         textView.setGravity(Gravity.CENTER);
         textView.setPadding(25, 1, 25, 1);
-
+        textView.setTextColor(getSelectedColor());
         FrameLayout.LayoutParams layoutParams = new LayoutParams(120, ViewGroup.LayoutParams.WRAP_CONTENT);
         addView(textView, layoutParams);
     }
 
     @Override
-    public void pageScrolled(float positionOffset, boolean toRight) {
+    public void updateCount() {
+
+    }
+
+    @Override
+    public void updateDefault() {
+
+    }
+
+    @Override
+    public void updateSelected() {
+        textView.setTextColor(getSelectedColor());
+    }
+
+    @Override
+    public void pageScrolled(int position, float positionOffset) {
 
     }
 
     @Override
     public void changeIndex(int index) {
+        setIndex(index);
         if (getTotal() == 0) {
             textView.setText("");
         } else {

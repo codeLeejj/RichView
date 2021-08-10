@@ -3,11 +3,15 @@
   <component name="DesignSurface">
     <option name="filePathToZoomLevelMap">
       <map>
-        <entry key="../../../../../layout/custom_preview.xml" value="0.28489583333333335" />
+        <entry key="../../../../../layout/custom_preview.xml" value="0.5" />
+        <entry key="app/src/main/res/drawable/sp_dot_default.xml" value="0.275" />
+        <entry key="app/src/main/res/drawable/sp_dot_selected.xml" value="0.275" />
         <entry key="app/src/main/res/layout/activity_banner_demo.xml" value="0.1716485507246377" />
         <entry key="app/src/main/res/layout/activity_main.xml" value="0.20018535681186284" />
         <entry key="app/src/main/res/layout/item_banner_image.xml" value="0.19157608695652173" />
         <entry key="richView/src/main/res/drawable/sp_bg_white.xml" value="0.27447916666666666" />
+        <entry key="richView/src/main/res/drawable/sp_dot_default.xml" value="0.275" />
+        <entry key="richView/src/main/res/drawable/sp_dot_selected.xml" value="0.275" />
       </map>
     </option>
   </component>

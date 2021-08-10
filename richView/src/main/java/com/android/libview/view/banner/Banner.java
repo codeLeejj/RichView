@@ -53,12 +53,27 @@ public class Banner<T> extends FrameLayout implements IBanner<T> {
         int duration = attributes.getInteger(R.styleable.Banner_duration, 1500);
         float xRatio = attributes.getFloat(R.styleable.Banner_indicatorXRatio, -1.f);
         float yRatio = attributes.getFloat(R.styleable.Banner_indicatorYRatio, -1.f);
+        int defaultColor = attributes.getColor(R.styleable.Banner_colorDefault, AIndicator.DEFAULT_COLOR);
+        int selectedColor = attributes.getColor(R.styleable.Banner_colorSelected, AIndicator.SELECTED_COLOR);
+        int defaultDrawable = attributes.getResourceId(R.styleable.Banner_drawableDefault, R.drawable.sp_dot_default);
+        int selectedDrawable = attributes.getResourceId(R.styleable.Banner_drawableSelected, R.drawable.sp_dot_selected);
+
         setAutoPlay(autoPlay);
         setLoop(loop);
         setInterval(interval);
         setDuration(duration);
+        /**
+         * 这下面的数据该怎么给AIndicator?
+         * Builder?  代码就不解耦,使用也麻烦
+         * 静态? N个页面的M个Banner 导致只有一个Banner的配置生效
+         * <Banner><AIndicator/></Banner>?   这样属性就可以交给AIndicator,创建config交给Banner
+         */
         setIndicatorXRatio(xRatio);
         setIndicatorYRatio(yRatio);
+        setDefaultColor(defaultColor);
+        setSelectedColor(selectedColor);
+        setDefaultDrawable(defaultDrawable);
+        setSelectedDrawable(selectedDrawable);
         attributes.recycle();
     }
 
@@ -103,6 +118,26 @@ public class Banner<T> extends FrameLayout implements IBanner<T> {
     @Override
     public void setDuration(int duration) {
         bannerDelegate.setDuration(duration);
+    }
+
+    @Override
+    public void setDefaultColor(int defaultColor) {
+        bannerDelegate.setDefaultColor(defaultColor);
+    }
+
+    @Override
+    public void setSelectedColor(int selectedColor) {
+        bannerDelegate.setSelectedColor(selectedColor);
+    }
+
+    @Override
+    public void setDefaultDrawable(int defaultDrawable) {
+        bannerDelegate.setDefaultDrawable(defaultDrawable);
+    }
+
+    @Override
+    public void setSelectedDrawable(int selectedDrawable) {
+        bannerDelegate.setSelectedDrawable(selectedDrawable);
     }
 
     @Override

@@ -6,7 +6,7 @@ import androidx.appcompat.widget.AppCompatImageView
 import com.android.libview.view.banner.Banner
 import com.android.libview.view.banner.core.BannerAdapter
 import com.android.libview.view.banner.core.IAdapter
-import com.android.libview.view.banner.indicator.TextIndicator
+import com.android.libview.view.banner.indicator.DotIndicator
 import com.bumptech.glide.Glide
 import com.lee.richview.R
 
@@ -30,7 +30,8 @@ class BannerDemoActivity : AppCompatActivity() {
                     .into(holder.getView<AppCompatImageView>(R.id.aiv))
             }
         })
-        banner.setIndicator(TextIndicator(baseContext))//, 1f, 1.0f
+//        banner.setIndicator(TextIndicator(baseContext))//, 1f, 1.0f
+        banner.setIndicator(DotIndicator(baseContext))//, 1f, 1.0f
         //模拟网络延迟
         banner.postDelayed({
             banner.update(
@@ -47,13 +48,13 @@ class BannerDemoActivity : AppCompatActivity() {
             )
         }, 2_000)
         //测试轮播开关
-        banner.postDelayed({
-            banner.setLoop(false)
-        }, 10_000)//要滚动到最后才能看到效果
-
-        banner.postDelayed({
-            banner.setLoop(true)
-        }, 60_000)
+//        banner.postDelayed({
+//            banner.setLoop(false)
+//        }, 10_000)//要滚动到最后才能看到效果
+//
+//        banner.postDelayed({
+//            banner.setLoop(true)
+//        }, 60_000)
 
         //测试自动播放开关
     }
