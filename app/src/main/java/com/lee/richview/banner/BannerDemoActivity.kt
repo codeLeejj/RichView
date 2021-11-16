@@ -39,6 +39,16 @@ class BannerDemoActivity : AppCompatActivity() {
                     BannerBo("https://www.devio.org/img/beauty_camera/beauty_camera1.jpg"),
                     BannerBo("https://www.devio.org/img/beauty_camera/beauty_camera3.jpg"),
                     BannerBo("https://www.devio.org/img/beauty_camera/beauty_camera4.jpg"),
+                ).toMutableList()
+            )
+        }, 2_000)
+
+        banner.postDelayed({
+            banner.update(
+                arrayOf(
+                    BannerBo("https://www.devio.org/img/beauty_camera/beauty_camera1.jpg"),
+                    BannerBo("https://www.devio.org/img/beauty_camera/beauty_camera3.jpg"),
+                    BannerBo("https://www.devio.org/img/beauty_camera/beauty_camera4.jpg"),
                     BannerBo("https://www.devio.org/img/beauty_camera/beauty_camera5.jpg"),
                     BannerBo("https://www.devio.org/img/beauty_camera/beauty_camera2.jpg"),
                     BannerBo("https://www.devio.org/img/beauty_camera/beauty_camera6.jpg"),
@@ -46,7 +56,8 @@ class BannerDemoActivity : AppCompatActivity() {
                     BannerBo("https://www.devio.org/img/beauty_camera/beauty_camera8.jpeg")
                 ).toMutableList()
             )
-        }, 2_000)
+        }, 10_000)
+
         //测试轮播开关
 //        banner.postDelayed({
 //            banner.setLoop(false)

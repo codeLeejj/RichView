@@ -32,7 +32,6 @@ public class DotIndicator extends AIndicator {
         mResources = context.getResources();
         defaultDrawable = mResources.getDrawable(getDefaultDrawable());
         selectedDrawable = mResources.getDrawable(getSelectedDrawable());
-
         defaultPaint = new Paint();
         defaultPaint.setColor(Color.WHITE);
         defaultPaint.setAntiAlias(true);
@@ -40,10 +39,6 @@ public class DotIndicator extends AIndicator {
         defaultPaint.setTextSize(16);
 
         selectedPaint = new Paint();
-
-        if (getBackground() == null) {
-            setBackgroundColor(Color.parseColor("#00000000"));
-        }
     }
 
     @Override
@@ -87,7 +82,6 @@ public class DotIndicator extends AIndicator {
 
     @Override
     public void updateCount() {
-        requestLayout();
         invalidate();
     }
 

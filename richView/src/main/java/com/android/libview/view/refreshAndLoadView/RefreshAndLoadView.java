@@ -63,7 +63,10 @@ public class RefreshAndLoadView extends FrameLayout implements IRefreshAndLoadVi
      */
     private static final float REFRESH_DAMP = 1.9f;
     private static final float LOAD_DAMP = 2.5f;
-
+    /**
+     * 最大滑动距离
+     */
+    private static final float MAC_SLIDE_HEIGHT = 1000f;
     /**
      * 工具中找到的列表视图
      */
@@ -261,11 +264,15 @@ public class RefreshAndLoadView extends FrameLayout implements IRefreshAndLoadVi
         if (!userControl && header.getBottom() <= 0 && distanceY > 0) {
             return true;
         }
+        //设置最大拉伸位置
+        if (header.getBottom() > MAC_SLIDE_HEIGHT) {
+            setStateAndNotify(userControl);
+            return true;
+        }
         if (userControl && scroller.getTop() > mRefreshHeight) {
             distanceY /= REFRESH_DAMP;
         }
         Log.w("RefreshAndLoadView", "moveHeader -> header:" + header.getBottom() + "     scroller:" + scroller.getTop() + " ----- ");
-
         header.offsetTopAndBottom(-(int) distanceY);
         scroller.offsetTopAndBottom(-(int) distanceY);
         Log.w("RefreshAndLoadView", "moveHeader -> header:" + header.getBottom() + "     scroller:" + scroller.getTop());
@@ -284,6 +291,10 @@ public class RefreshAndLoadView extends FrameLayout implements IRefreshAndLoadVi
             return false;
         Log.w("RefreshAndLoadView", "moveTail distanceY:" + distanceY);
 
+        if (scrollView.getTop() < -MAC_SLIDE_HEIGHT) {
+            setStateAndNotify(userControl);
+            return true;
+        }
         if (scrollView != null) {
             if (userControl && -scrollView.getTop() > mLoadHeight) {
                 distanceY /= LOAD_DAMP;

@@ -13,6 +13,11 @@ import com.android.libview.R;
 /**
  * 定义指示器
  * 注意: 指示器的颜色和图标应该是同时使用,需求特殊除外
+ * <p>
+ * 自定义Indicator:
+ * 1.确定选中和默认的 颜色或图标
+ * 2.关注一下位置的改变{@link AIndicator#changeIndex(int index)} 和 {@link AIndicator#updateCount()}
+ * 3.如果您要做切换动画,应该关注{@link AIndicator#pageScrolled(int position, float positionOffset)}
  */
 public abstract class AIndicator extends FrameLayout {
     /**
@@ -48,16 +53,23 @@ public abstract class AIndicator extends FrameLayout {
 
     public AIndicator(@NonNull Context context) {
         super(context);
-        init(context);
+        commonInitialize(context);
     }
 
     public AIndicator(@NonNull Context context, @Nullable AttributeSet attrs) {
         super(context, attrs);
-        init(context);
+        commonInitialize(context);
     }
 
     public AIndicator(@NonNull Context context, @Nullable AttributeSet attrs, int defStyleAttr) {
         super(context, attrs, defStyleAttr);
+        commonInitialize(context);
+    }
+
+    private void commonInitialize(Context context) {
+        if (getBackground() == null) {
+            setBackgroundColor(Color.parseColor("#00000000"));
+        }
         init(context);
     }
 
@@ -110,14 +122,13 @@ public abstract class AIndicator extends FrameLayout {
 
     protected void setTotal(int total) {
         this.total = total;
+        requestLayout();
         updateCount();
     }
 
     public int getTotal() {
         return total;
     }
-
-    public abstract void updateCount();
 
     /**
      * 更新了默认 色/图标
@@ -128,6 +139,11 @@ public abstract class AIndicator extends FrameLayout {
      * 更新了选中 色/图标
      */
     public abstract void updateSelected();
+
+    /**
+     * 实现层实现update的逻辑,不用考虑向父View申请
+     */
+    public abstract void updateCount();
 
     /**
      * banner 的位置已经发生变化
@@ -143,5 +159,4 @@ public abstract class AIndicator extends FrameLayout {
      * @param positionOffset 滑动的偏移量 百分比
      */
     public abstract void pageScrolled(int position, float positionOffset);
-
 }
